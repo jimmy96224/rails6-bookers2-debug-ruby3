@@ -4,15 +4,17 @@ class BookCommentsController < ApplicationController
     book = Book.find(params[:book_id])
     comment = current_user.book_comments.new(book_comment_params)
     comment.book_id = book.id
-    session[:previous_url] = request.referer
-    comment.save
-    redirect_to session[:previous_url]
+    if comment.save
+      flash.now[:notice] = 'コメントを投稿しました'
+      render :book_comments
+    else
+      render 'books/show'
+    end
   end
   
   def destroy
-    session[:previous_url] = request.referer
     BookComment.find(params[:id]).destroy
-    redirect_to session[:previous_url]
+    render :post_comments
   end
   
   private
